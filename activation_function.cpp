@@ -1,8 +1,6 @@
 #pragma once
 
 #include "activation_function.h"
-#include "types.h"
-#include <cassert>
 
 namespace NeuralNet {
 
@@ -15,7 +13,7 @@ Matrix ActivationFunction::Activate(const Matrix &x) const {
   return x.unaryExpr(function_);
 }
 
-Matrix ActivationFunction::ActivateDer(const Matrix &x) const {
+Matrix ActivationFunction::Derivative(const Matrix &x) const {
   assert(dfunction_);
   return x.unaryExpr(dfunction_);
 }

@@ -1,6 +1,9 @@
 #pragma once
 
-#include "external/eigen-3.4.0/Eigen/Dense"
+#include "external/eigen/Eigen/Core"
+#include "external/eigen/Eigen/Dense"
+#include <cassert>
+#include <functional>
 
 namespace NeuralNet {
 

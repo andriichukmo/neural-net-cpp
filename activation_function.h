@@ -8,7 +8,7 @@ class ActivationFunction {
 public:
   ActivationFunction(const Function function, const Function dfunction);
   Matrix Activate(const Matrix &x) const;
-  Matrix ActivateDer(const Matrix &x) const;
+  Matrix Derivative(const Matrix &x) const;
 
 private:
   Function function_;
