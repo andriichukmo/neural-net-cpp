@@ -1,6 +1,6 @@
 #pragma once
 
-#include "external/eigen/Eigen/Dense"
+#include <Eigen/Dense>
 #include <cassert>
 #include <functional>
 #include <vector>
