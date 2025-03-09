@@ -12,4 +12,6 @@ add_executable(neural-net-cpp
     linear_layer.cpp
     activation_function.cpp
     loss_function.cpp
+    except.cpp
+    tests.cpp
 )
