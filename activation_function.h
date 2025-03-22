@@ -5,10 +5,13 @@
 namespace NeuralNet {
 
 class ActivationFunction {
+  using Signature = double(double);
+  using Function = std::function<Signature>;
+
 public:
-  ActivationFunction(const Function function, const Function dfunction);
-  Matrix Activate(const Matrix &x) const;
-  Matrix Derivative(const Matrix &x) const;
+  ActivationFunction(Function function, Function dfunction);
+  Matrix Apply(const Matrix &x) const;
+  Matrix Differential(const Matrix &x) const;
 
 private:
   Function function_;

@@ -9,7 +9,7 @@ include_directories(external/eigen)
 add_executable(neural-net-cpp
     main.cpp
     nnet.cpp
-    linear_layer.cpp
+    layer.cpp
     activation_function.cpp
     loss_function.cpp
     except.cpp

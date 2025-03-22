@@ -4,8 +4,8 @@
 
 namespace NeuralNet {
 
-void NeuralNetwork::AddLayer(const LinearLayer &layer) {
-  layers_.push_back(layer);
+void NeuralNetwork::AddLayer(Layer &&layer) {
+  layers_.push_back(std::move(layer));
 }
 
 Matrix NeuralNetwork::Predict(const Matrix &x) {

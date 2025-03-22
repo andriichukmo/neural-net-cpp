@@ -5,10 +5,9 @@
 
 namespace NeuralNet {
 
-class LinearLayer {
+class Layer {
 public:
-  LinearLayer(Index in_size, Index out_size,
-              ActivationFunction activation_function);
+  Layer(Index in_size, Index out_size, ActivationFunction activation_function);
   Matrix Forward(const Matrix &x);
   Matrix Backward(const Matrix &u, double learn_rate);
 

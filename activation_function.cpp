@@ -4,16 +4,15 @@
 
 namespace NeuralNet {
 
-ActivationFunction::ActivationFunction(const Function function,
-                                       const Function dfunction)
+ActivationFunction::ActivationFunction(Function function, Function dfunction)
     : function_(std::move(function)), dfunction_(std::move(dfunction)) {}
 
-Matrix ActivationFunction::Activate(const Matrix &x) const {
+Matrix ActivationFunction::Apply(const Matrix &x) const {
   assert(function_);
   return x.unaryExpr(function_);
 }
 
-Matrix ActivationFunction::Derivative(const Matrix &x) const {
+Matrix ActivationFunction::Differential(const Matrix &x) const {
   assert(dfunction_);
   return x.unaryExpr(dfunction_);
 }

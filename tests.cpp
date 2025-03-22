@@ -2,7 +2,7 @@
 
 #include "tests.h"
 #include "activation_function.h"
-#include "linear_layer.h"
+#include "layer.h"
 #include "loss_function.h"
 #include "nnet.h"
 #include "types.h"
@@ -28,8 +28,8 @@ void run_all_tests() {
 
   NeuralNetwork net;
 
-  net.AddLayer(LinearLayer(in_size, 4, ReLU()));
-  net.AddLayer(LinearLayer(4, out_size, Id()));
+  net.AddLayer(Layer(in_size, 4, ReLU()));
+  net.AddLayer(Layer(4, out_size, Id()));
 
   double learn_rate = 0.01;
   int epochs = 1000;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "linear_layer.h"
+#include "layer.h"
 #include "loss_function.h"
 #include "types.h"
 
@@ -8,7 +8,7 @@ namespace NeuralNet {
 
 class NeuralNetwork {
 public:
-  void AddLayer(const LinearLayer &layer);
+  void AddLayer(Layer &&layer);
 
   Matrix Predict(const Matrix &x);
 
@@ -19,7 +19,7 @@ public:
                      const LossFunction &loss_function, int epochs);
 
 private:
-  std::vector<LinearLayer> layers_;
+  std::vector<Layer> layers_;
 };
 
 } // namespace NeuralNet
