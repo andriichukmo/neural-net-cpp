@@ -3,7 +3,8 @@
 
 int main() {
   try {
-    Tests::run_all_tests();
+    Tests::test_basic();
+    Tests::test_mnist();
   } catch (...) {
     Except::react();
   }

@@ -8,6 +8,9 @@ include_directories(external/eigen)
 
 add_executable(neural-net-cpp
     main.cpp
+    softmax.cpp
+    mnist_loader.cpp
+    dataloader.cpp
     nnet.cpp
     layer.cpp
     activation_function.cpp

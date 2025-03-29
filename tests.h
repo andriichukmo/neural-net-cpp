@@ -2,6 +2,7 @@
 
 namespace Tests {
 
-void run_all_tests();
+void test_basic();
+void test_mnist();
 
-}
+} // namespace Tests
