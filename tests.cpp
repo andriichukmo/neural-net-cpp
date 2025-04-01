@@ -7,10 +7,10 @@
 #include "loss_function.h"
 #include "mnist_loader.h"
 #include "nnet.h"
-#include "softmax.h"
 #include "types.h"
 #include <iomanip>
 #include <iostream>
+#include <memory>
 
 namespace Tests {
 
@@ -32,8 +32,10 @@ void test_basic() {
 
   NeuralNetwork net;
 
-  net.AddLayer(Layer(In{in_size}, Out{4}, ReLU()));
-  net.AddLayer(Layer(In{4}, Out{out_size}, Id()));
+  net.AddLayer(Layer(In{in_size}, Out{4},
+                     std::make_unique<OneElementActivationFunction>(ReLU())));
+  net.AddLayer(Layer(In{4}, Out{out_size},
+                     std::make_unique<OneElementActivationFunction>(Id())));
 
   DataLoader data(X, T);
   double learn_rate = 0.01;
@@ -63,16 +65,21 @@ void test_mnist() {
   NeuralNetwork net;
   constexpr int image_size = 784;
   constexpr int second_layer_size = 128;
+  constexpr int third_layer_size = 64;
   constexpr int number_of_digits = 10;
-  net.AddLayer(Layer(In{image_size}, Out{second_layer_size}, ReLU()));
-  net.AddLayer(Layer(In{second_layer_size}, Out{number_of_digits}, Id()));
+  net.AddLayer(Layer(In{image_size}, Out{second_layer_size},
+                     std::make_unique<OneElementActivationFunction>(ReLU())));
+  net.AddLayer(Layer(In{second_layer_size}, Out{third_layer_size},
+                     std::make_unique<OneElementActivationFunction>(ReLU())));
+  net.AddLayer(Layer(In{third_layer_size}, Out{number_of_digits},
+                     std::make_unique<SoftMaxActivation>(SoftMax())));
 
-  int train_size = 1024;
+  int train_size = 8192;
   Matrix X_sub = images.block(0, 0, images.rows(), train_size);
   Matrix T_sub = labels.block(0, 0, labels.rows(), train_size);
   DataLoader data(X_sub, T_sub);
-  double learn_rate = 1e-5;
-  int num_epoch = 40;
+  double learn_rate = 1e-4;
+  int num_epoch = 100;
   int batch_size = 16;
   double final_loss = net.Train(data, BatchSize{batch_size}, learn_rate,
                                 loss_function, Epoch{num_epoch});
@@ -80,7 +87,6 @@ void test_mnist() {
             << "Final Training Loss : " << final_loss << std::endl;
 
   Matrix predictions = net.Predict(images);
-  predictions = softmax(predictions);
   std::cout << "Result for first 100 images :" << std::endl;
   for (int i = 0; i < 100; ++i) {
     int predicted, ans;
@@ -92,6 +98,19 @@ void test_mnist() {
               << predictions.col(i).transpose() << std::endl
               << labels.col(i).transpose() << std::endl;
   }
+  int correct = 0;
+  for (int i = 0; i < images.cols(); ++i) {
+    int predicted, ans;
+    predictions.col(i).maxCoeff(&predicted);
+    labels.col(i).maxCoeff(&ans);
+    if (ans == predicted) {
+      correct++;
+    }
+  }
+  std::cout << "And final result is " << correct << " out of " << images.cols()
+            << "\n";
+  std::cout << "It's about " << static_cast<double>(correct) / images.cols()
+            << " rate!\n";
 }
 
 } // namespace Tests
