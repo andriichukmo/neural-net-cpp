@@ -74,7 +74,7 @@ void test_mnist() {
   net.AddLayer(Layer(In{third_layer_size}, Out{number_of_digits},
                      std::make_unique<SoftMaxActivation>(SoftMax())));
 
-  int train_size = 8192;
+  int train_size = 60000;
   Matrix X_sub = images.block(0, 0, images.rows(), train_size);
   Matrix T_sub = labels.block(0, 0, labels.rows(), train_size);
   DataLoader data(X_sub, T_sub);

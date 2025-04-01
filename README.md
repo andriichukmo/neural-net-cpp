@@ -6,7 +6,7 @@ My implementation of neural net using C++.
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=RELEASE ..
 cmake --build .
 ./neural-net-cpp
 ```
