@@ -74,12 +74,9 @@ void test_mnist() {
   net.AddLayer(Layer(In{third_layer_size}, Out{number_of_digits},
                      std::make_unique<SoftMaxActivation>(SoftMax())));
 
-  int train_size = 60000;
-  Matrix X_sub = images.block(0, 0, images.rows(), train_size);
-  Matrix T_sub = labels.block(0, 0, labels.rows(), train_size);
-  DataLoader data(X_sub, T_sub);
+  DataLoader data(images, labels);
   double learn_rate = 1e-4;
-  int num_epoch = 100;
+  int num_epoch = 300;
   int batch_size = 16;
   double final_loss = net.Train(data, BatchSize{batch_size}, learn_rate,
                                 loss_function, Epoch{num_epoch});
