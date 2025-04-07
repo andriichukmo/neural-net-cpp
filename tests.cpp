@@ -76,8 +76,8 @@ void test_mnist() {
 
   DataLoader data(images, labels);
   double learn_rate = 1e-4;
-  int num_epoch = 300;
-  int batch_size = 16;
+  int num_epoch = 500;
+  int batch_size = 32;
   double final_loss = net.Train(data, BatchSize{batch_size}, learn_rate,
                                 loss_function, Epoch{num_epoch});
   std::cout << std::fixed << std::setprecision(5)
