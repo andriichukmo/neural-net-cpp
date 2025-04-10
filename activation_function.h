@@ -38,6 +38,10 @@ public:
   Matrix Differential(const Matrix &x) const;
 };
 
+namespace SoftMaxFunc {
+
 SoftMaxActivation SoftMax();
+
+}
 
 } // namespace NeuralNet

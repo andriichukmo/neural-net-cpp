@@ -19,6 +19,7 @@ void test_basic() {
   constexpr Index in_size = 3;
   constexpr Index out_size = 2;
   constexpr Index samples = 4;
+  constexpr Index extra_layer = 8;
 
   Matrix X(in_size, samples);
   X << 1, 2, 3, 4, 4, 3, 2, 1, 1, 1, 1, 1;
@@ -30,13 +31,15 @@ void test_basic() {
 
   NeuralNetwork net;
 
-  net.AddLayer(Layer(In{in_size}, Out{4},
+  net.AddLayer(Layer(In{in_size}, Out{extra_layer},
                      std::make_unique<OneElementActivationFunction>(
                          EasyActivationFunc::ReLU())));
-  net.AddLayer(Layer(In{4}, Out{out_size},
+  net.AddLayer(Layer(In{extra_layer}, Out{4},
                      std::make_unique<OneElementActivationFunction>(
                          EasyActivationFunc::Id())));
-
+  net.AddLayer(
+      Layer(In{4}, Out{out_size},
+            std::make_unique<SoftMaxActivation>(SoftMaxFunc::SoftMax())));
   DataLoader data(X, T);
   double learn_rate = 0.01;
   int epochs = 20;
@@ -70,7 +73,7 @@ void test_mnist() {
   constexpr int number_of_digits = 10;
   net.AddLayer(Layer(In{image_size}, Out{second_layer_size},
                      std::make_unique<OneElementActivationFunction>(
-                         EasyActivationFunc::ReLU())));
+                         EasyActivationFunc::Id())));
   net.AddLayer(Layer(In{second_layer_size}, Out{third_layer_size},
                      std::make_unique<OneElementActivationFunction>(
                          EasyActivationFunc::Sigmoid())));
@@ -78,8 +81,9 @@ void test_mnist() {
                      std::make_unique<OneElementActivationFunction>(
                          EasyActivationFunc::ReLU())));
 
-  net.AddLayer(Layer(In{third_layer_size}, Out{number_of_digits},
-                     std::make_unique<SoftMaxActivation>(SoftMax())));
+  net.AddLayer(
+      Layer(In{fourth_layer_size}, Out{number_of_digits},
+            std::make_unique<SoftMaxActivation>(SoftMaxFunc::SoftMax())));
 
   DataLoader data(images, labels);
   double learn_rate = 1e-4;

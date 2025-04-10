@@ -1,5 +1,3 @@
-#pragma once
-
 #include "activation_function.h"
 #include "types.h"
 #include <cassert>
@@ -58,6 +56,6 @@ Matrix SoftMaxActivation::Differential(const Matrix &x) const {
   return Apply(x);
 }
 
-SoftMaxActivation SoftMax() { return SoftMaxActivation(); }
+SoftMaxActivation SoftMaxFunc::SoftMax() { return SoftMaxActivation(); }
 
 } // namespace NeuralNet
