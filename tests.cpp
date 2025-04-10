@@ -1,5 +1,3 @@
-#pragma once
-
 #include "tests.h"
 #include "activation_function.h"
 #include "dataloader.h"
@@ -33,9 +31,11 @@ void test_basic() {
   NeuralNetwork net;
 
   net.AddLayer(Layer(In{in_size}, Out{4},
-                     std::make_unique<OneElementActivationFunction>(ReLU())));
+                     std::make_unique<OneElementActivationFunction>(
+                         EasyActivationFunc::ReLU())));
   net.AddLayer(Layer(In{4}, Out{out_size},
-                     std::make_unique<OneElementActivationFunction>(Id())));
+                     std::make_unique<OneElementActivationFunction>(
+                         EasyActivationFunc::Id())));
 
   DataLoader data(X, T);
   double learn_rate = 0.01;
@@ -66,18 +66,25 @@ void test_mnist() {
   constexpr int image_size = 784;
   constexpr int second_layer_size = 128;
   constexpr int third_layer_size = 64;
+  constexpr int fourth_layer_size = 64;
   constexpr int number_of_digits = 10;
   net.AddLayer(Layer(In{image_size}, Out{second_layer_size},
-                     std::make_unique<OneElementActivationFunction>(ReLU())));
+                     std::make_unique<OneElementActivationFunction>(
+                         EasyActivationFunc::ReLU())));
   net.AddLayer(Layer(In{second_layer_size}, Out{third_layer_size},
-                     std::make_unique<OneElementActivationFunction>(ReLU())));
+                     std::make_unique<OneElementActivationFunction>(
+                         EasyActivationFunc::Sigmoid())));
+  net.AddLayer(Layer(In{third_layer_size}, Out{fourth_layer_size},
+                     std::make_unique<OneElementActivationFunction>(
+                         EasyActivationFunc::ReLU())));
+
   net.AddLayer(Layer(In{third_layer_size}, Out{number_of_digits},
                      std::make_unique<SoftMaxActivation>(SoftMax())));
 
   DataLoader data(images, labels);
   double learn_rate = 1e-4;
-  int num_epoch = 500;
-  int batch_size = 32;
+  int num_epoch = 666;
+  int batch_size = 16;
   double final_loss = net.Train(data, BatchSize{batch_size}, learn_rate,
                                 loss_function, Epoch{num_epoch});
   std::cout << std::fixed << std::setprecision(5)

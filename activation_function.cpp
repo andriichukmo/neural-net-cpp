@@ -2,6 +2,7 @@
 
 #include "activation_function.h"
 #include "types.h"
+#include <cassert>
 
 namespace NeuralNet {
 
@@ -19,14 +20,14 @@ Matrix OneElementActivationFunction::Differential(const Matrix &x) const {
   return x.unaryExpr(dfunction_);
 }
 
-OneElementActivationFunction ReLU() {
+OneElementActivationFunction EasyActivationFunc::ReLU() {
   static OneElementActivationFunction ReLU(
       [](double t) -> double { return (t > 0) * t; },
       [](double t) -> double { return (t > 0); });
   return ReLU;
 }
 
-OneElementActivationFunction Sigmoid() {
+OneElementActivationFunction EasyActivationFunc::Sigmoid() {
   static OneElementActivationFunction Sigmoid(
       [](double t) -> double { return 1.0 / (1.0 + std::exp(-t)); },
       [](double t) -> double {
@@ -36,7 +37,7 @@ OneElementActivationFunction Sigmoid() {
   return Sigmoid;
 }
 
-OneElementActivationFunction Id() {
+OneElementActivationFunction EasyActivationFunc::Id() {
   static OneElementActivationFunction Id(
       [](double t) -> double { return t; },
       [](double t) -> double { return 1.0; });

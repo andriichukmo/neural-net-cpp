@@ -1,5 +1,6 @@
 #include "dataloader.h"
 #include "types.h"
+#include <cassert>
 #include <random>
 
 namespace NeuralNet {

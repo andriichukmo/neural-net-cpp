@@ -24,9 +24,13 @@ private:
   Function dfunction_;
 };
 
+namespace EasyActivationFunc {
+
 OneElementActivationFunction ReLU();
 OneElementActivationFunction Sigmoid();
 OneElementActivationFunction Id();
+
+} // namespace EasyActivationFunc
 
 class SoftMaxActivation : public ActivationFunction {
 public:

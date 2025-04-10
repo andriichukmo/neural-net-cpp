@@ -1,6 +1,7 @@
 #include "layer.h"
 #include "activation_function.h"
 #include "types.h"
+#include <cassert>
 #include <memory>
 
 namespace NeuralNet {
