@@ -1,5 +1,3 @@
-#pragma once
-
 #include "nnet.h"
 #include "layer.h"
 #include "loss_function.h"

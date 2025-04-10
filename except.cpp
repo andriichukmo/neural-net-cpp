@@ -1,5 +1,3 @@
-#pragma once
-
 #include "except.h"
 #include <exception>
 #include <iostream>
