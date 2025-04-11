@@ -4,58 +4,63 @@
 
 namespace NeuralNet {
 
-OneElementActivationFunction::OneElementActivationFunction(Function function,
-                                                           Function dfunction)
+ActivationFunction::ActivationFunction(Function function, Function dfunction)
     : function_(std::move(function)), dfunction_(std::move(dfunction)) {}
 
-Matrix OneElementActivationFunction::Apply(const Matrix &x) const {
+Matrix ActivationFunction::Apply(const Matrix &x) const {
   assert(function_);
-  return x.unaryExpr(function_);
+  return function_(x);
 }
 
-Matrix OneElementActivationFunction::Differential(const Matrix &x) const {
+Matrix ActivationFunction::Differential(const Matrix &x) const {
   assert(dfunction_);
-  return x.unaryExpr(dfunction_);
+  return dfunction_(x);
 }
 
-OneElementActivationFunction EasyActivationFunc::ReLU() {
-  static OneElementActivationFunction ReLU(
-      [](double t) -> double { return (t > 0) * t; },
-      [](double t) -> double { return (t > 0); });
+ActivationFunction ActivationFuncs::ReLU() {
+  ActivationFunction ReLU(
+      [](const Matrix &x) -> Matrix { return x.array().max(0.0).matrix(); },
+      [](const Matrix &x) -> Matrix {
+        return (x.array() > 0.0).cast<double>().matrix();
+      });
   return ReLU;
 }
 
-OneElementActivationFunction EasyActivationFunc::Sigmoid() {
-  static OneElementActivationFunction Sigmoid(
-      [](double t) -> double { return 1.0 / (1.0 + std::exp(-t)); },
-      [](double t) -> double {
-        double tt = 1.0 / (1 + std::exp(-t));
-        return tt * (1 - tt);
+ActivationFunction ActivationFuncs::Sigmoid() {
+  ActivationFunction Sigmoid(
+      [](const Matrix &x) -> Matrix {
+        return (1.0 / (1.0 + (-x.array()).exp())).matrix();
+      },
+      [](const Matrix &x) -> Matrix {
+        Matrix y = (1.0 / (1.0 + (-x.array()).exp())).matrix();
+        return (y.array() * (1.0 - y.array())).matrix();
       });
   return Sigmoid;
 }
 
-OneElementActivationFunction EasyActivationFunc::Id() {
-  static OneElementActivationFunction Id(
-      [](double t) -> double { return t; },
-      [](double t) -> double { return 1.0; });
+ActivationFunction ActivationFuncs::Id() {
+  ActivationFunction Id([](const Matrix &x) -> Matrix { return x; },
+                        [](const Matrix &x) -> Matrix {
+                          return Matrix::Ones(x.rows(), x.cols());
+                        });
   return Id;
 }
 
-Matrix SoftMaxActivation::Apply(const Matrix &x) const {
-  Matrix res(x.rows(), x.cols());
-  for (int i = 0; i < x.cols(); ++i) {
-    Vector col = x.col(i);
-    Vector exps = (col.array() - col.maxCoeff()).exp();
-    res.col(i) = exps / exps.sum();
-  }
-  return res;
+ActivationFunction ActivationFuncs::SoftMax() {
+  ActivationFunction SoftMax(
+      [](const Matrix &x) -> Matrix {
+        Matrix res(x.rows(), x.cols());
+        for (int i = 0; i < x.cols(); ++i) {
+          Vector col = x.col(i);
+          Vector exps = (col.array() - col.maxCoeff()).exp();
+          res.col(i) = exps / exps.sum();
+        }
+        return res;
+      },
+      [](const Matrix &x) -> Matrix {
+        return Matrix::Ones(x.rows(), x.cols());
+      });
+  return SoftMax;
 }
-
-Matrix SoftMaxActivation::Differential(const Matrix &x) const {
-  return Apply(x);
-}
-
-SoftMaxActivation SoftMaxFunc::SoftMax() { return SoftMaxActivation(); }
 
 } // namespace NeuralNet

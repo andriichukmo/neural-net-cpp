@@ -5,17 +5,11 @@
 namespace NeuralNet {
 
 class ActivationFunction {
-public:
-  virtual Matrix Apply(const Matrix &x) const = 0;
-  virtual Matrix Differential(const Matrix &x) const = 0;
-};
-
-class OneElementActivationFunction : public ActivationFunction {
-  using Signature = double(double);
+  using Signature = Matrix(const Matrix &);
   using Function = std::function<Signature>;
 
 public:
-  OneElementActivationFunction(Function function, Function dfunction);
+  ActivationFunction(Function function, Function dfunction);
   Matrix Apply(const Matrix &x) const;
   Matrix Differential(const Matrix &x) const;
 
@@ -24,24 +18,13 @@ private:
   Function dfunction_;
 };
 
-namespace EasyActivationFunc {
+namespace ActivationFuncs {
 
-OneElementActivationFunction ReLU();
-OneElementActivationFunction Sigmoid();
-OneElementActivationFunction Id();
+ActivationFunction ReLU();
+ActivationFunction Sigmoid();
+ActivationFunction Id();
+ActivationFunction SoftMax();
 
-} // namespace EasyActivationFunc
-
-class SoftMaxActivation : public ActivationFunction {
-public:
-  Matrix Apply(const Matrix &x) const;
-  Matrix Differential(const Matrix &x) const;
-};
-
-namespace SoftMaxFunc {
-
-SoftMaxActivation SoftMax();
-
-}
+} // namespace ActivationFuncs
 
 } // namespace NeuralNet

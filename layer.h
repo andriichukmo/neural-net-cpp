@@ -15,8 +15,7 @@ public:
   };
   enum class Mode { Release, Learning };
 
-  Layer(In in_size, Out out_size,
-        std::unique_ptr<ActivationFunction> activation_function);
+  Layer(In in_size, Out out_size, ActivationFunction &&activation_function);
   void switchToMode(Mode mode);
   Matrix Forward(const Matrix &x);
   Matrix Backward(const Matrix &grad, double learn_rate);
@@ -24,9 +23,8 @@ public:
 private:
   Matrix A_;
   Vector b_;
-  std::unique_ptr<ActivationFunction> activation_function_;
+  ActivationFunction activation_function_;
 
-  // for backward
   std::unique_ptr<Cache> cache_;
 };
 

@@ -31,15 +31,9 @@ void test_basic() {
 
   NeuralNetwork net;
 
-  net.AddLayer(Layer(In{in_size}, Out{extra_layer},
-                     std::make_unique<OneElementActivationFunction>(
-                         EasyActivationFunc::ReLU())));
-  net.AddLayer(Layer(In{extra_layer}, Out{4},
-                     std::make_unique<OneElementActivationFunction>(
-                         EasyActivationFunc::Id())));
-  net.AddLayer(
-      Layer(In{4}, Out{out_size},
-            std::make_unique<SoftMaxActivation>(SoftMaxFunc::SoftMax())));
+  net.AddLayer(Layer(In{in_size}, Out{extra_layer}, ActivationFuncs::ReLU()));
+  net.AddLayer(Layer(In{extra_layer}, Out{4}, ActivationFuncs::Id()));
+  net.AddLayer(Layer(In{4}, Out{out_size}, ActivationFuncs::SoftMax()));
   DataLoader data(X, T);
   double learn_rate = 0.01;
   int epochs = 20;
@@ -71,19 +65,15 @@ void test_mnist() {
   constexpr int third_layer_size = 64;
   constexpr int fourth_layer_size = 64;
   constexpr int number_of_digits = 10;
-  net.AddLayer(Layer(In{image_size}, Out{second_layer_size},
-                     std::make_unique<OneElementActivationFunction>(
-                         EasyActivationFunc::Id())));
-  net.AddLayer(Layer(In{second_layer_size}, Out{third_layer_size},
-                     std::make_unique<OneElementActivationFunction>(
-                         EasyActivationFunc::Sigmoid())));
-  net.AddLayer(Layer(In{third_layer_size}, Out{fourth_layer_size},
-                     std::make_unique<OneElementActivationFunction>(
-                         EasyActivationFunc::ReLU())));
-
   net.AddLayer(
-      Layer(In{fourth_layer_size}, Out{number_of_digits},
-            std::make_unique<SoftMaxActivation>(SoftMaxFunc::SoftMax())));
+      Layer(In{image_size}, Out{second_layer_size}, ActivationFuncs::Id()));
+  net.AddLayer(Layer(In{second_layer_size}, Out{third_layer_size},
+                     ActivationFuncs::Sigmoid()));
+  net.AddLayer(Layer(In{third_layer_size}, Out{fourth_layer_size},
+                     ActivationFuncs::ReLU()));
+
+  net.AddLayer(Layer(In{fourth_layer_size}, Out{number_of_digits},
+                     ActivationFuncs::SoftMax()));
 
   DataLoader data(images, labels);
   double learn_rate = 1e-4;
