@@ -8,7 +8,6 @@
 #include "types.h"
 #include <iomanip>
 #include <iostream>
-#include <memory>
 
 namespace Tests {
 

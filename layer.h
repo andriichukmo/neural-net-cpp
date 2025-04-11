@@ -18,6 +18,7 @@ public:
   Layer(In in_size, Out out_size, ActivationFunction &&activation_function);
   void switchToMode(Mode mode);
   Matrix Forward(const Matrix &x);
+  Matrix Predict(const Matrix &x) const;
   Matrix Backward(const Matrix &grad, double learn_rate);
 
 private:

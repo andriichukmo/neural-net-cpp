@@ -17,7 +17,7 @@ Matrix NeuralNetwork::Predict(const Matrix &x) const {
   Matrix res = x;
 
   for (auto &layer : layers_) {
-    res = const_cast<Layer &>(layer).Forward(res);
+    res = layer.Predict(res);
   }
 
   return res;

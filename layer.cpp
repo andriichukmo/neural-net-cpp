@@ -22,11 +22,15 @@ void Layer::switchToMode(Mode mode) {
 
 Matrix Layer::Forward(const Matrix &x) {
   assert(x.rows() == A_.cols());
+  assert(cache_);
   Matrix y = (A_ * x).colwise() + b_;
-  if (cache_) {
-    cache_->x = x;
-    cache_->y = y;
-  }
+  cache_->x = x;
+  cache_->y = y;
+  return activation_function_.Apply(y);
+}
+
+Matrix Layer::Predict(const Matrix &x) const {
+  Matrix y = (A_ * x).colwise() + b_;
   return activation_function_.Apply(y);
 }
 
