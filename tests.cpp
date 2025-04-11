@@ -59,11 +59,18 @@ void test_mnist() {
 
   LossFunction loss_function;
   NeuralNetwork net;
+  constexpr int total = 60000;
+  constexpr int train_count = 50000;
+  constexpr int test_count = total - train_count;
   constexpr int image_size = 784;
   constexpr int second_layer_size = 128;
   constexpr int third_layer_size = 64;
   constexpr int fourth_layer_size = 64;
   constexpr int number_of_digits = 10;
+  Matrix train_images = images.block(0, 0, images.rows(), train_count);
+  Matrix train_labels = labels.block(0, 0, labels.rows(), train_count);
+  Matrix test_images = images.block(0, train_count, images.rows(), test_count);
+  Matrix test_labels = labels.block(0, train_count, labels.rows(), test_count);
   net.AddLayer(
       Layer(In{image_size}, Out{second_layer_size}, ActivationFuncs::Id()));
   net.AddLayer(Layer(In{second_layer_size}, Out{third_layer_size},
@@ -74,21 +81,21 @@ void test_mnist() {
   net.AddLayer(Layer(In{fourth_layer_size}, Out{number_of_digits},
                      ActivationFuncs::SoftMax()));
 
-  DataLoader data(images, labels);
+  DataLoader train_data(train_images, train_labels);
   double learn_rate = 1e-4;
   int num_epoch = 666;
   int batch_size = 16;
-  double final_loss = net.Train(data, BatchSize{batch_size}, learn_rate,
+  double final_loss = net.Train(train_data, BatchSize{batch_size}, learn_rate,
                                 loss_function, Epoch{num_epoch});
   std::cout << std::fixed << std::setprecision(5)
             << "Final Training Loss : " << final_loss << std::endl;
 
-  Matrix predictions = net.Predict(images);
+  Matrix predictions = net.Predict(test_images);
   std::cout << "Result for first 100 images :" << std::endl;
   for (int i = 0; i < 100; ++i) {
     int predicted, ans;
     predictions.col(i).maxCoeff(&predicted);
-    labels.col(i).maxCoeff(&ans);
+    test_labels.col(i).maxCoeff(&ans);
     std::cout << "My prediction for " << i + 1 << "-th image : " << predicted
               << " and right answer is " << ans << " and it's "
               << (predicted == ans ? "OK" : "BAD") << std::endl
@@ -96,18 +103,18 @@ void test_mnist() {
               << labels.col(i).transpose() << std::endl;
   }
   int correct = 0;
-  for (int i = 0; i < images.cols(); ++i) {
+  for (int i = 0; i < test_images.cols(); ++i) {
     int predicted, ans;
     predictions.col(i).maxCoeff(&predicted);
-    labels.col(i).maxCoeff(&ans);
+    test_labels.col(i).maxCoeff(&ans);
     if (ans == predicted) {
       correct++;
     }
   }
-  std::cout << "And final result is " << correct << " out of " << images.cols()
-            << "\n";
-  std::cout << "It's about " << static_cast<double>(correct) / images.cols()
-            << " rate!\n";
+  std::cout << "And final result is " << correct << " out of "
+            << test_images.cols() << "\n";
+  std::cout << "It's about "
+            << static_cast<double>(correct) / test_images.cols() << " rate!\n";
 }
 
 } // namespace Tests
