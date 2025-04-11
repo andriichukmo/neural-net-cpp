@@ -28,24 +28,32 @@ double NeuralNetwork::Train(const DataLoader &data, BatchSize batch_size,
                             const LossFunction &loss_function, Epoch epochs) {
   assert(epochs > 0);
   double last_epoch_loss = 0.0;
-  SetLearningMode();
+  class ModeGuard {
+  public:
+    ModeGuard(NeuralNetwork &n) : net(n) { net.SetLearningMode(); }
+    ~ModeGuard() { net.SetReleaseMode(); }
+
+  private:
+    NeuralNetwork &net;
+  } guard(*this);
   for (int e = 0; e < epochs; ++e) {
     last_epoch_loss =
         TrainOneEpoch(data, batch_size, learn_rate, loss_function);
     std::cout << "During Epoch " << e + 1 << " gained Loss: " << last_epoch_loss
               << std::endl;
   }
-  SetReleaseMode();
   return last_epoch_loss;
 }
 
 void NeuralNetwork::SetLearningMode() {
+  std::cout << "Setting Net to Learning Mode ...\n";
   for (auto &layer : layers_) {
     layer.switchToMode(Layer::Mode::Learning);
   }
 }
 
 void NeuralNetwork::SetReleaseMode() {
+  std::cout << "Setting Net to Release Mode ...\n";
   for (auto &layer : layers_) {
     layer.switchToMode(Layer::Mode::Release);
   }
