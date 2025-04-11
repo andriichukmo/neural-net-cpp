@@ -56,10 +56,8 @@ double NeuralNetwork::TrainOneEpoch(const DataLoader &data,
                                     const LossFunction &loss_function) {
   DataLoader data_copied = data;
   data_copied.shuffle();
-  auto batches = data_copied.batches(batch_size);
   double epoch_loss = 0.0;
-  int number_of_batches = batches.size();
-  for (const auto &batch : batches) {
+  for (const Batch &batch : data_copied.batches(batch_size)) {
     Matrix output = Forward(batch.x);
     double loss_val = loss_function.Difference(output, batch.target);
     Matrix grad = loss_function.Gradient(output, batch.target);
@@ -67,6 +65,7 @@ double NeuralNetwork::TrainOneEpoch(const DataLoader &data,
     epoch_loss += loss_val;
   }
 
+  int number_of_batches = data_copied.numBatches(batch_size);
   epoch_loss /= number_of_batches;
   return epoch_loss;
 }

@@ -8,7 +8,6 @@
 namespace NeuralNet {
 
 enum Epoch : int;
-enum BatchSize : int;
 
 class NeuralNetwork {
 public:

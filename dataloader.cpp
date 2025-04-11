@@ -1,11 +1,45 @@
 #include "dataloader.h"
 #include "types.h"
+#include <algorithm>
 #include <cassert>
 #include <random>
 
 namespace NeuralNet {
 
-DataLoader::DataLoader(Matrix &X, Matrix &T) : X_(X), T_(T) {
+BatchIterator::BatchIterator(const Matrix &X, const Matrix &T,
+                             BatchSize batch_size, Pos pos)
+    : X_(X), T_(T), batch_size_(batch_size), total_samples_(X.cols()),
+      pos_(pos) {}
+
+Batch BatchIterator::operator*() const {
+  int cur_size = std::min(total_samples_ - pos_, batch_size_);
+  Batch batch;
+  batch.x = X_.block(0, pos_, X_.rows(), cur_size);
+  batch.target = T_.block(0, pos_, T_.rows(), cur_size);
+  return batch;
+}
+
+BatchIterator &BatchIterator::operator++() {
+  pos_ += batch_size_;
+  return *this;
+}
+
+bool BatchIterator::operator!=(const BatchIterator &other) const {
+  return pos_ != other.pos_;
+}
+
+BatchProxy::BatchProxy(const Matrix &X, const Matrix &T, int batch_size)
+    : X_(X), T_(T), batch_size_(batch_size){};
+
+BatchIterator BatchProxy::begin() const {
+  return BatchIterator(X_, T_, BatchSize{batch_size_}, Pos{0});
+}
+
+BatchIterator BatchProxy::end() const {
+  return BatchIterator(X_, T_, BatchSize{batch_size_}, Pos{X_.cols()});
+}
+
+DataLoader::DataLoader(const Matrix &X, const Matrix &T) : X_(X), T_(T) {
   assert(X.cols() == T.cols());
 }
 
@@ -30,17 +64,12 @@ void DataLoader::shuffle() {
   T_ = T_shuffled;
 }
 
-std::vector<Batch> DataLoader::batches(int batch_size) const {
-  std::vector<Batch> res;
-  int n = X_.cols();
-  for (int i = 0; i < n; i += batch_size) {
-    int cur_size = std::min(batch_size, n - i);
-    Batch batch;
-    batch.x = X_.block(0, i, X_.rows(), cur_size);
-    batch.target = T_.block(0, i, T_.rows(), cur_size);
-    res.push_back(batch);
-  }
-  return res;
+BatchProxy DataLoader::batches(int batch_size) const {
+  return BatchProxy(X_, T_, batch_size);
+}
+
+int DataLoader::numBatches(int batch_size) const {
+  return (X_.cols() + batch_size - 1) / batch_size;
 }
 
 } // namespace NeuralNet
