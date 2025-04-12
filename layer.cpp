@@ -30,6 +30,7 @@ Matrix Layer::Forward(const Matrix &x) {
 }
 
 Matrix Layer::Predict(const Matrix &x) const {
+  assert(x.rows() == A_.cols());
   Matrix y = (A_ * x).colwise() + b_;
   return activation_function_.Apply(y);
 }
